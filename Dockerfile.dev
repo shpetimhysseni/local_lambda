@@ -1,0 +1,21 @@
+FROM python:3.8-slim-bullseye
+
+WORKDIR /var/task
+
+COPY requirements.txt ./
+
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+ENV LAMBDA_TASK_ROOT="/var/task"
+
+COPY app ./app/
+
+RUN python -m app.download_db
+
+RUN chmod 755 ${LAMBDA_TASK_ROOT}/app/simple_db.sqlite
+
+EXPOSE 3000
+
+# VOLUME ["/app/feedback"]
+
+CMD ["python", "-m", "app.app"]
